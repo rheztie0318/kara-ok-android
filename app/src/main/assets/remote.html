@@ -1,0 +1,87 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Kara-OK Remote</title>
+<style>
+:root{--bg:#0a0914;--p:#14122a;--p2:#1c1938;--l:#2c2852;--t:#eeecf8;--m:#9b97bb;--hl:#ffd23f;--hl2:#ff4fa3;--a:#7c5cff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--t);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;background:var(--p);padding:10px 14px;border-bottom:1px solid var(--l);z-index:2}
+h1{font-size:18px;margin:0 0 8px}h1 span{color:var(--hl2)}
+#now{font-size:13px;color:var(--m)}#now b{color:var(--hl)}
+.tabs{display:flex;gap:6px;margin-top:10px}.tabs button{flex:1;background:none;border:0;border-bottom:2px solid transparent;color:var(--m);padding:8px;font-size:15px}
+.tabs button.on{color:var(--t);border-color:var(--hl2)}
+main{padding:12px 14px 90px}.pane{display:none}.pane.on{display:block}
+input{width:100%;background:var(--bg);color:var(--t);border:1px solid var(--l);border-radius:12px;padding:12px;font-size:16px;margin-bottom:10px}
+.song{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--p);margin-bottom:6px}
+.song .n{font-weight:800;color:var(--hl);min-width:52px}.song .x{flex:1;min-width:0}.song .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.song .a{font-size:12px;color:var(--m)}
+button.first{background:var(--hl2);color:#fff;border:0;border-radius:10px;padding:10px 12px;font-size:15px;font-weight:700}
+.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;padding-bottom:2px}
+.chips button{flex:none;background:var(--p2);color:var(--m);border:1px solid var(--l);border-radius:999px;padding:7px 12px;font-size:13px}
+.chips button.on{background:var(--a);border-color:var(--a);color:#fff}
+button.go{background:var(--a);color:#fff;border:0;border-radius:10px;padding:10px 14px;font-size:15px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid button,.pad button{background:var(--p2);color:var(--t);border:1px solid var(--l);border-radius:14px;padding:16px 6px;font-size:16px;font-weight:600}
+.grid button.wide{grid-column:span 3}.grid button.hot{background:var(--hl2);border-color:var(--hl2)}
+h3{font-size:13px;color:var(--m);text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+#num{font-size:30px;text-align:center;letter-spacing:4px;font-weight:800;color:var(--hl)}
+.q{padding:10px;border-radius:12px;background:var(--p);margin-bottom:6px}.q b{color:var(--hl)}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--p2);border:1px solid var(--l);padding:12px 16px;border-radius:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.on{opacity:1}
+</style></head><body>
+<header><h1>Kara-<span>OK</span> Remote</h1><div id="now">Connecting…</div>
+<div class="tabs"><button class="on" data-p="songs">Songs</button><button data-p="number">Number</button><button data-p="queue">Queue</button><button data-p="remote">Remote</button><button data-p="upload">Upload</button></div></header>
+<main>
+<input id="singer" placeholder="Your name (for the queue)">
+<div class="pane on" id="p-songs"><input id="q" type="search" placeholder="Search title, artist or number"><div class="chips" id="langs"></div><div id="list"></div></div>
+<div class="pane" id="p-number"><div id="num">-----</div><div class="pad" id="pad"></div>
+<button class="go" style="width:100%;margin-top:10px;padding:16px" id="reserveNum">Reserve this number</button>
+<button class="first" style="width:100%;margin-top:8px;padding:14px" id="reserveFirst">⇧ Reserve first</button></div>
+<div class="pane" id="p-queue"><div id="queue"></div></div>
+<div class="pane" id="p-remote">
+<div class="grid"><button data-a="playpause">⏯ Play / Pause</button><button data-a="next">⏭ Next singer</button><button data-a="restart">⟲ Restart</button>
+<button data-a="key_down">♭ Key −</button><button data-a="key_reset" id="keyLbl">Key 0</button><button data-a="key_up">♯ Key +</button>
+<button data-a="vol_down">🔉 Vol −</button><button data-a="melody">🎵 Guide</button><button data-a="vol_up">🔊 Vol +</button>
+<button data-a="vocal">🎤 Vocal cut</button><button data-a="score">⭐ Score</button><button data-a="stop">⏹ Stop</button></div>
+<h3>Sound effects</h3><div class="grid" id="sfx"></div></div>
+<div class="pane" id="p-upload"><p style="color:var(--m);line-height:1.5">Send songs from this phone or a computer to the TV. MIDI (.mid .kar), MP3, MP4, and CD+G (.mp3 + .cdg, or .zip) all work. Lyric files (.lrc) too.</p>
+<input type="file" id="files" multiple style="padding:14px">
+<button class="go" style="width:100%;padding:16px" id="sendFiles">Upload to TV</button>
+<div id="upStatus" style="margin-top:12px;color:var(--m)"></div></div>
+</main><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s);let digits='';
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),2500)};
+try{$('#singer').value=localStorage.getItem('singer')||''}catch(e){}
+$('#singer').oninput=e=>{try{localStorage.setItem('singer',e.target.value)}catch(_){}};
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.p));});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function post(u,b){const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});return r.json()}
+let lang='';
+async function reserve(n,first){const r=await post('/api/reserve',{number:n,singer:$('#singer').value.trim()||'Guest',first:!!first});toast(r.msg);poll()}
+async function search(){const r=await fetch('/api/songs?q='+encodeURIComponent($('#q').value)+'&lang='+encodeURIComponent(lang));const a=await r.json();
+$('#list').innerHTML=a.length?a.map(s=>`<div class="song"><div class="n">${s.n}</div><div class="x"><div class="t">${esc(s.t)}</div><div class="a">${esc(s.a||'')} · ${s.k}</div></div><button class="go" data-n="${s.n}">＋</button><button class="first" data-n="${s.n}" data-f="1" title="Reserve first">⇧</button></div>`).join(''):'<p style="color:var(--m)">No songs found.</p>'}
+$('#list').onclick=e=>{const b=e.target.closest('button');if(b)reserve(b.dataset.n,b.dataset.f)};
+async function loadLangs(){try{const a=await (await fetch('/api/langs')).json();if(a.length<2){$('#langs').style.display='none';return}
+$('#langs').innerHTML=['All',...a].map(l=>`<button data-l="${l==='All'?'':esc(l)}" class="${(l==='All'?'':l)===lang?'on':''}">${esc(l)}</button>`).join('')}catch(e){}}
+$('#langs').onclick=e=>{const b=e.target.closest('button');if(!b)return;lang=b.dataset.l;document.querySelectorAll('#langs button').forEach(x=>x.classList.toggle('on',x===b));search()};
+loadLangs();
+let st;$('#q').oninput=()=>{clearTimeout(st);st=setTimeout(search,250)};search();
+const pad=$('#pad');['1','2','3','4','5','6','7','8','9','⌫','0','C'].forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>{if(k==='⌫')digits=digits.slice(0,-1);else if(k==='C')digits='';else if(digits.length<6)digits+=k;$('#num').textContent=digits||'-----'};pad.appendChild(b)});
+$('#reserveNum').onclick=()=>{if(digits){reserve(digits);digits='';$('#num').textContent='-----'}};
+$('#reserveFirst').onclick=()=>{if(digits){reserve(digits,true);digits='';$('#num').textContent='-----'}};
+document.querySelector('#p-remote').onclick=e=>{const b=e.target.closest('button[data-a]');if(b)post('/api/control',{action:b.dataset.a,arg:b.dataset.arg||''}).then(poll)};
+let sfxKey='';
+async function poll(){try{const s=await (await fetch('/api/state')).json();
+$('#now').innerHTML=s.song?`Now: <b>${esc(s.singer||'')}</b> — ${esc(s.song)}`:'Nothing playing';
+$('#keyLbl').textContent='Key '+(s.key>0?'+':'')+(s.key||0);
+$('#queue').innerHTML=(s.song?`<div class="q">▶ <b>${esc(s.singer||'')}</b> — ${esc(s.song)}</div>`:'')+((s.queue||[]).map((q,i)=>`<div class="q">${i+1}. <b>${esc(q.singer)}</b> — ${q.number} ${esc(q.title)}</div>`).join('')||'<p style="color:var(--m)">Queue is empty.</p>');
+const k=(s.sfx||[]).join('|');if(k!==sfxKey){sfxKey=k;$('#sfx').innerHTML=(s.sfx||[]).map(n=>`<button data-a="sfx" data-arg="${esc(n)}">${esc(n)}</button>`).join('')}
+}catch(e){$('#now').textContent='Not connected — same Wi-Fi as the TV?'}}
+poll();setInterval(poll,2000);
+$('#sendFiles').onclick=async()=>{const fs=[...$('#files').files];if(!fs.length){toast('Choose files first');return}
+let ok=0;for(const [i,f] of fs.entries()){$('#upStatus').textContent=`Uploading ${i+1} of ${fs.length}: ${f.name}…`;
+try{const r=await fetch('/api/upload?name='+encodeURIComponent(f.name),{method:'POST',body:f});const j=await r.json();if(j.ok)ok++;else toast(j.msg)}catch(e){toast('Upload failed: '+f.name)}}
+$('#upStatus').textContent=`Done: ${ok} of ${fs.length} uploaded. New songs appear in the list in a moment.`;$('#files').value='';setTimeout(()=>{loadLangs();search()},1500)};
+</script></body></html>

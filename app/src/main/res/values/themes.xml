@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="KaraTheme" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorAccent">#FF4FA3</item>
+        <item name="android:colorPrimary">#14122A</item>
+        <item name="android:colorPrimaryDark">#0A0914</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+    <style name="KaraDialog" parent="@android:style/Theme.Material.Dialog.Alert">
+        <item name="android:colorAccent">#FF4FA3</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+</resources>

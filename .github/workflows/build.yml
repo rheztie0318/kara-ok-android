@@ -1,0 +1,45 @@
+name: Build Kara-OK APK
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build the APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --stacktrace
+
+      - name: Name the APK
+        run: cp app/build/outputs/apk/release/app-release.apk Kara-OK.apk
+
+      - name: Keep the APK with this build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kara-OK-APK
+          path: Kara-OK.apk
+
+      - name: Publish as the "latest" download
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest Kara-OK.apk \
+            --title "Kara-OK for Android TV" \
+            --notes "Latest build from $(date -u +'%Y-%m-%d %H:%M') UTC. Download Kara-OK.apk and install it on your TV box."
