@@ -242,6 +242,17 @@ class MainActivity : Activity(), KaraPlayer.Listener {
         surface = SurfaceView(this)
         root.addView(surface, FrameLayout.LayoutParams(-1, -1, Gravity.CENTER))
         stage = StageView(this)
+        // Phones and tablets: tapping the screen does what OK does on a TV remote
+        stage.setOnClickListener {
+            touch()
+            when {
+                pending != null -> tryBegin(true)
+                stage.overlay is StageView.Overlay.Score -> { main.removeCallbacks(afterScore); afterScore.run() }
+                closePanels() -> showBar()
+                barScroll.visibility == View.VISIBLE -> hideBar()
+                else -> showBar()
+            }
+        }
         root.addView(stage, FrameLayout.LayoutParams(-1, -1))
 
         // control bar
